@@ -8,12 +8,12 @@ const port = process.env.PORT || 3000;
 
 let positionsJson = { 
   //starting positions
-  'source1': { x: 50, y: 50 },
-  'source2': { x: 150, y: 150 },
-  'source3': { x: 250, y: 250 },
-  'source4': { x: 350, y: 350 },
-  'source5': { x: 100, y: 300 },
-  'source6': { x: 300, y: 100 }
+  'source1': { x: 50, y: 50, name: 'deep' },
+  'source2': { x: 150, y: 150, name: 'dive' },
+  'source3': { x: 250, y: 250, name: 'dawn' },
+  'source4': { x: 350, y: 350, name: 'drift' },
+  'source5': { x: 100, y: 300, name: 'dream' },
+  'source6': { x: 300, y: 100, name: 'dance' }
 };
 
 app.get('/', function(req, res) {
@@ -35,9 +35,8 @@ io.on('connection', (socket) => {
   socket.emit('invokePersistence', positionsJson);
   //receives the sound position emitter from Client
   socket.on("setSoundPosition", (message) => {
-    console.log(message);
     //update positionsJson
-    positionsJson[message.source] = { x: message.x, y: message.y };
+    positionsJson[message.source] = { x: message.x, y: message.y, name: positionsJson[message.source].name };
     //relay the position to all clients
     io.emit('relaySoundPosition', message);
   });

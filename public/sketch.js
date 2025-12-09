@@ -1,14 +1,39 @@
+class xClass {  
+    constructor(x, y, name) {
+        this.x = x;
+        this.y = y;
+        this.size = 10;
+        this.name = name;
+    }
+    move(newX, newY) {
+        this.x = newX;
+        this.y = newY;
+    }
+    render(x, y) {
+        this.x = x;
+        this.y = y;
+        line(this.x - this.size / 2, this.y - this.size / 2, this.x + this.size / 2, this.y + this.size / 2);
+        line(this.x + this.size / 2, this.y - this.size / 2, this.x - this.size / 2, this.y + this.size / 2);
+        text(this.name, this.x + 10, this.y);
+    }
+ }
+
 let socket = io();
 let playing = false;
 
 let positionsJson = {};
+let sources = [];
 
 socket.on('invokePersistence', (data) => {
     console.log('set default positions');
     console.log(data);
+
     for (const [source, position] of Object.entries(data)) {
         console.log(source, position);
         positionsJson[source] = position;
+        console.log(position.x);
+        sourcey = new xClass(position.x, position.y, position.name);
+        sources.push(sourcey);
     }
 });
 
@@ -23,7 +48,8 @@ function preload() {
 }
 
 function setup() {
-    createCanvas(400, 400);
+    cnv = createCanvas(640, 480);
+    cnv.parent('main');
     
     mySound.disconnect();
     panner = new p5.Panner3D();
@@ -42,8 +68,9 @@ function draw() {
     background(220);
     text('perSistenZ', 10, 10);
     for (const [source, position] of Object.entries(positionsJson)) {
-        ellipse(position.x, position.y, 20, 20);
-        text(source, position.x + 10, position.y);
+        let index = Object.keys(positionsJson).indexOf(source);
+        sources[index].render(position.x, position.y, position.name);
+        
     }
     //update panner position based on source1
     if (positionsJson['source1']) {
@@ -58,6 +85,7 @@ function draw() {
             if (d < 10) {
                 //update position
                 positionsJson[source] = { x: mouseX, y: mouseY };
+                
                 //send new position to server
                 setSoundPosition(mouseX, mouseY, source);
             }
@@ -68,3 +96,4 @@ function draw() {
 function setSoundPosition(x, y, source) {
     socket.emit('setSoundPosition', { x: x, y: y, source: source });
 }
+
