@@ -12,8 +12,7 @@ let positionsJson = {
   'source2': { x: 150, y: 150, name: 'dive' },
   'source3': { x: 250, y: 250, name: 'dawn' },
   'source4': { x: 350, y: 350, name: 'drift' },
-  'source5': { x: 100, y: 300, name: 'dream' },
-  'source6': { x: 300, y: 100, name: 'dance' }
+  'source5': { x: 450, y: 450, name: 'dream' }
 };
 
 app.get('/', function(req, res) {

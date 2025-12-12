@@ -1,12 +1,13 @@
 
 
 class xClass {  
-    constructor(x, y, name) {
+    constructor(x, y, name, pic) {
         this.x = x;
         this.y = y;
         this.size = 30;
         this.name = name;
         this.playState = false;
+        this.pic = pic;
     }
     move(newX, newY) {
         this.x = newX;
@@ -15,24 +16,19 @@ class xClass {
     render(x, y) {
         this.x = x;
         this.y = y;
-        push();
-        fill(150, 0, 150);
-        noStroke();
-        ellipse(this.x, this.y, this.size);
-        // line(this.x - this.size / 2, this.y - this.size / 2, this.x + this.size / 2, this.y + this.size / 2);
-        // line(this.x + this.size / 2, this.y - this.size / 2, this.x - this.size / 2, this.y + this.size / 2);
-        fill(9, 0, 150);
-        text(this.name, this.x + 20, this.y);
-        text(`playing = ${this.playState}`, this.x + 20, this.y + 20);
-        pop();
+        
+        image(this.pic, this.x , this.y, 100, 100);
     }
  }
 
 let socket = io();
 let playing = false;
+let isTerminal = false;
 
 let positionsJson = {};
 let sources = [];
+
+let images = [];
 
 socket.on('invokePersistence', (data) => {
     console.log('set default positions');
@@ -42,7 +38,7 @@ socket.on('invokePersistence', (data) => {
         console.log(source, position);
         positionsJson[source] = position;
         console.log(position.x);
-        sourcey = new xClass(position.x, position.y, position.name);
+        sourcey = new xClass(position.x, position.y, position.name, images[Object.keys(data).indexOf(source)]);
         sources.push(sourcey);
     }
 });
@@ -56,11 +52,14 @@ socket.on('relaySoundPosition', (data) => {
 function playSound() {
     playing = true;
     console.log('thishappend');
-    mySound.play();
-    mySound.loop();
+    //mySound.play();
+    //mySound.loop();
 }
 
 function preload() {
+    for (let i = 0; i < 5; i++) {
+        images[i] = loadImage(`assets/image${i}.jpg`);
+    }
     mySound = loadSound('assets/gateOpening.mp3');
 }
 
@@ -70,6 +69,7 @@ function setup() {
     cnv = createCanvas(640, 480);
     cnv.parent('main');
     cnv.mousePressed(playSound());
+    imageMode(CENTER);
     textFont('Courier New');
     textSize(12);
     mySound.disconnect();
@@ -79,6 +79,9 @@ function setup() {
 }
 
 function draw() {
+    if (keyIsPressed && key === 't') {
+        isTerminal = !isTerminal;
+    }
     background(220);
     text('perSistenZ (release candidate v0.1)', 10, 10);
     if (!playing) {
@@ -99,6 +102,17 @@ function draw() {
         let y = map(positionsJson['source1'].y, 0, height, 1, -1);
         panner.set(x, y, 0);
     }
+
+    // Draw X-axis (Red)
+  stroke('red'); // Set line color to red
+  strokeWeight(2); // Make the line thicker (optional)
+  line(0, height / 2, width, height / 2); // From left edge to right edge at mid-height
+
+  // Draw Y-axis (Blue)
+  stroke('blue'); // Set line color to blue
+  strokeWeight(2); // Make the line thicker (optional)
+  line(width / 2, 0, width / 2, height); // From top edge to bottom edge at mid-width
+
     //check to see if mouse if pressed and over one of the sources
     if (mouseIsPressed || touches.length > 0) {
         for (const [source, position] of Object.entries(positionsJson)) {
@@ -106,7 +120,7 @@ function draw() {
             if (d < 30) {
                 //update position
                 positionsJson[source] = { x: mouseX, y: mouseY };
-                
+                console.log(`moved ${source} to ${mouseX}, ${mouseY}`);
                 //send new position to server
                 setSoundPosition(mouseX, mouseY, source);
             }
