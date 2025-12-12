@@ -67,6 +67,7 @@ function setup() {
     cnv = createCanvas(640, 480);
     cnv.parent('main');
     cnv.mousePressed(playSound);
+    cnv.touchStarted(playSound);
     imageMode(CENTER);
     textFont('Courier New');
     textSize(12);
