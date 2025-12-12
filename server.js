@@ -8,7 +8,7 @@ const port = process.env.PORT || 3000;
 
 let positionsJson = { 
   //starting positions
-  'source1': { x: 50, y: 50, name: 'deep' },
+  'source1': { x: 51, y: 50, name: 'deep' },
   'source2': { x: 150, y: 150, name: 'dive' },
   'source3': { x: 250, y: 250, name: 'dawn' },
   'source4': { x: 350, y: 350, name: 'drift' },
