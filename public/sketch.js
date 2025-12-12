@@ -78,12 +78,18 @@ function setup() {
     }
 
 }
-
-function draw() {
-    if (keyIsPressed && key === 't') {
+function keyPressed() {
+    if (key === 't') {
         isTerminal = !isTerminal;
     }
+}
+
+function draw() {
     background(220);
+    preventOverlap();
+    if (isTerminal) {
+        text('tap phone here to drop-in', width - 190, height - 10);
+    }
     text('perSistenZ (release candidate v0.1)', 10, 10);
     if (!playing) {
         text('click to connect...', 10, 20);
@@ -108,7 +114,6 @@ function draw() {
         if (positionsJson[`source${i+1}`]) {
             let x = map(positionsJson[`source${i+1}`].x, 0, width, -1, 1);
             let y = map(positionsJson[`source${i+1}`].y, 0, height, 1, -1);
-            console.log(`Setting panner${i} to x:${x} y:${y}`);
             panners[i].set(x, 0, y, 0.1);
         }
     }
@@ -132,6 +137,36 @@ function draw() {
                 positionsJson[source] = { x: mouseX, y: mouseY };
                 //send new position to server
                 setSoundPosition(mouseX, mouseY, source);
+            }
+        }
+    }
+}
+
+function preventOverlap() {
+    const minDistance = 100; // Minimum distance between objects
+    const sources = Object.keys(positionsJson);
+    
+    for (let i = 0; i < sources.length; i++) {
+        for (let j = i + 1; j < sources.length; j++) {
+            let pos1 = positionsJson[sources[i]];
+            let pos2 = positionsJson[sources[j]];
+            
+            let distance = dist(pos1.x, pos1.y, pos2.x, pos2.y);
+            
+            if (distance < minDistance && distance > 0) {
+                // Calculate repulsion force
+                let angle = atan2(pos2.y - pos1.y, pos2.x - pos1.x);
+                let overlap = (minDistance - distance) / 2;
+                
+                // Push both objects apart
+                pos1.x -= cos(angle) * overlap;
+                pos1.y -= sin(angle) * overlap;
+                pos2.x += cos(angle) * overlap;
+                pos2.y += sin(angle) * overlap;
+                
+                // Emit updates for both positions
+                setSoundPosition(pos1.x, pos1.y, sources[i]);
+                setSoundPosition(pos2.x, pos2.y, sources[j]);
             }
         }
     }
