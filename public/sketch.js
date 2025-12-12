@@ -1,9 +1,12 @@
+
+
 class xClass {  
     constructor(x, y, name) {
         this.x = x;
         this.y = y;
-        this.size = 10;
+        this.size = 30;
         this.name = name;
+        this.playState = false;
     }
     move(newX, newY) {
         this.x = newX;
@@ -12,9 +15,16 @@ class xClass {
     render(x, y) {
         this.x = x;
         this.y = y;
-        line(this.x - this.size / 2, this.y - this.size / 2, this.x + this.size / 2, this.y + this.size / 2);
-        line(this.x + this.size / 2, this.y - this.size / 2, this.x - this.size / 2, this.y + this.size / 2);
-        text(this.name, this.x + 10, this.y);
+        push();
+        fill(150, 0, 150);
+        noStroke();
+        ellipse(this.x, this.y, this.size);
+        // line(this.x - this.size / 2, this.y - this.size / 2, this.x + this.size / 2, this.y + this.size / 2);
+        // line(this.x + this.size / 2, this.y - this.size / 2, this.x - this.size / 2, this.y + this.size / 2);
+        fill(9, 0, 150);
+        text(this.name, this.x + 20, this.y);
+        text(`playing = ${this.playState}`, this.x + 20, this.y + 20);
+        pop();
     }
  }
 
@@ -50,23 +60,19 @@ function preload() {
 function setup() {
     cnv = createCanvas(640, 480);
     cnv.parent('main');
-    
+    textFont('Courier New');
+    textSize(12);
     mySound.disconnect();
     panner = new p5.Panner3D();
     panner.set(0, 0, 0);
     mySound.connect(panner);
-    connect = createP('connect...');
-    connect.id('connect');
-    connect.mousePressed(() => {
-        mySound.play();
-        console.log('sound played');
-    });
-    connect.position(10, 20);
+    
 }
 
 function draw() {
     background(220);
-    text('perSistenZ', 10, 10);
+    text('perSistenZ (release candidate v0.1)', 10, 10);
+    text('click to connect...', 10, 20);
     for (const [source, position] of Object.entries(positionsJson)) {
         let index = Object.keys(positionsJson).indexOf(source);
         sources[index].render(position.x, position.y, position.name);
@@ -79,10 +85,10 @@ function draw() {
         panner.set(x, y, 0);
     }
     //check to see if mouse if pressed and over one of the sources
-    if (mouseIsPressed) {
+    if (mouseIsPressed || touches.length > 0) {
         for (const [source, position] of Object.entries(positionsJson)) {
             let d = dist(mouseX, mouseY, position.x, position.y);
-            if (d < 10) {
+            if (d < 30) {
                 //update position
                 positionsJson[source] = { x: mouseX, y: mouseY };
                 

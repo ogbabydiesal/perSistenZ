@@ -7,6 +7,11 @@ body, html {
   font-weight: 100;
 }
 
+p {
+  position: relative;
+  
+}
+
 #main {
   display: flex;
   height: 100vh;
