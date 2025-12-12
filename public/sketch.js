@@ -53,26 +53,41 @@ socket.on('relaySoundPosition', (data) => {
     positionsJson[data.source] = { x: data.x, y: data.y };
 });
 
+function playSound() {
+    playing = true;
+    console.log('thishappend');
+    mySound.play();
+    mySound.loop();
+}
+
 function preload() {
     mySound = loadSound('assets/gateOpening.mp3');
 }
 
+
+
 function setup() {
     cnv = createCanvas(640, 480);
     cnv.parent('main');
+    cnv.mousePressed(playSound());
     textFont('Courier New');
     textSize(12);
     mySound.disconnect();
     panner = new p5.Panner3D();
     panner.set(0, 0, 0);
     mySound.connect(panner);
-    
 }
 
 function draw() {
     background(220);
     text('perSistenZ (release candidate v0.1)', 10, 10);
-    text('click to connect...', 10, 20);
+    if (!playing) {
+        text('click to connect...', 10, 20);
+
+    } else {
+        text('connected', 10, 20);
+    }
+    
     for (const [source, position] of Object.entries(positionsJson)) {
         let index = Object.keys(positionsJson).indexOf(source);
         sources[index].render(position.x, position.y, position.name);

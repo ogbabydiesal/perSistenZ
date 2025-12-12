@@ -5,6 +5,7 @@ body, html {
   font-family: Georgia, 'Times New Roman', Times, serif;
   font-size: 13px;
   font-weight: 100;
+  overflow: hidden;
 }
 
 p {
