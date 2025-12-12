@@ -28,8 +28,8 @@ const server = app.listen(port, () => {
 const io = socketIO(server);
 
 io.on('connection', (socket) => {
-  console.log('Client connected');
-  console.log(socket.id);
+  //console.log('Client connected');
+  //console.log(socket.id);
   //send existing positions to new user
   socket.emit('invokePersistence', positionsJson);
   //receives the sound position emitter from Client

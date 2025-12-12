@@ -45,10 +45,12 @@ socket.on('relaySoundPosition', (data) => {
 });
 
 function playSound() {
-    playing = true;
-    for (let i = 0; i < sounds.length; i++) {
-        sounds[i].play();
-        sounds[i].loop();
+    if (!playing) {
+        for (let i = 0; i < sounds.length; i++) {
+            sounds[i].play();
+            sounds[i].loop();
+            playing = true;
+        }
     }
 }
 
@@ -64,7 +66,7 @@ function preload() {
 function setup() {
     cnv = createCanvas(640, 480);
     cnv.parent('main');
-    cnv.mousePressed(playSound());
+    cnv.mousePressed(playSound);
     imageMode(CENTER);
     textFont('Courier New');
     textSize(12);
